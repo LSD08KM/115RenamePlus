@@ -11,7 +11,7 @@
 
 右击文件夹或文件，点击站点选项，自动重命名。
 
-<img src="D:\github\115RenamePlus\img\00.png" style="zoom:50%;" />
+<img src="https://github.com/LSD08KM/115RenamePlus/blob/master/img/00.png" style="zoom:50%;" />
 
 支持多选。
 
