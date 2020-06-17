@@ -1,6 +1,12 @@
 # 115RenamePlus
 修改自 [115改名称]( https://greasyfork.org/zh-CN/scripts/396272-115rename ) 和 [FAN0926/JavaScript](https://github.com/FAN0926/JavaScript)
 
+## 使用前提
+
+必须在浏览器扩展[Tampermonkey](http://www.tampermonkey.net/)中安装使用。
+
+支持搜索三个站点，需要保证浏览器能正常访问到。
+
 ## 功能
 
 右击文件夹或文件，点击站点选项，自动重命名。
@@ -8,8 +14,6 @@
 <img src="D:\github\115RenamePlus\img\00.png" style="zoom:50%;" />
 
 支持多选。
-
-支持三个站点，需要保证浏览器能正常访问到。
 
 ### 改名后的格式为：
 
