@@ -2,7 +2,7 @@
 // @name                115RenamePlus
 // @namespace           http://tampermonkey.net/
 // @version             0.8
-// @description         115RenamePlus(根据现有的文件名<番号>查询并修改文件名)
+// @description         115改名称(根据现有的文件名<番号>查询并修改文件名)
 // @author              
 // @include             https://115.com/*
 // @domain              javbus.com
