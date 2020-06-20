@@ -360,12 +360,9 @@
                     .find("div.items_article_MainitemThumb img")
                     .attr("title");
                 // 卖家
-                let user;
-                /*
                 let user = response
-                            .find("div.items_article_headerInfo li a")
+                            .find("div.items_article_headerInfo > ul > li a:last ")
                             .html();
-                */
                 // 上架时间 上架时间 : 2020/06/17
                 let date = response
                             .find("div.items_article_Releasedate p")
@@ -373,6 +370,7 @@
                 date = date.replace(/\s+/g,"").replace(/:/g, "").replace(/\//g, "-");
                 console.log(title);
                 console.log(date);
+                console.log("user " + user);
                 
                 if (title) {
                     // 构建新名称
