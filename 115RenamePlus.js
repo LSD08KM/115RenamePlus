@@ -188,17 +188,18 @@
                             let actorTags = response.find("div.star-name").each(function(){
                                 actors.push($(this).find("a").attr("title"));
                             });
-                            console.log(actorTags);
-                            console.log(actors);
+                            console.log('演员 '+actors);
                             /*
                             for ( let actor of actorTags) {
                                 actors.push(actor.find("a").attr("title"));
                             }
-                            */                                             
+                            */
+                			resolve();                                       
                         }
                     });
+                }else{
+                	resolve(); 
                 }
-                resolve(actors);
             });
         }
 
@@ -227,7 +228,7 @@
         }
 
         getJavbusSearch.then(getJavbusDetail)
-            .then(getName)
+            .then(getName,getName)
             .then(function(result){
                 console.log("结束 " + result);
             });
@@ -301,12 +302,14 @@
                             let actorTags = response.find("a.avatar-box").each(function(){
                                 actors.push($(this).find("span").html());
                             });
-                            console.log(actorTags);
                             console.log(actors);
+                            resolve(); 
                         }
                     });
+                
+                }else{
+                	resolve(); 
                 }
-                resolve(actors);   
             });
         }
    
