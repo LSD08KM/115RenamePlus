@@ -168,7 +168,8 @@
                     moviePage = response
                         .find("a.movie-box")
                         .attr("href");
-                    console.log(title + fh_o + date);
+                    console.log("获取到 " + title + fh_o + date);
+                    console.log("详情页 " + moviePage);
                     resolve(moviePage);
                 }
             });
@@ -176,8 +177,8 @@
 
         function getJavbusDetail(){
             return new Promise((resolve, reject) => {
-                if(moviePage){
-                    console.log("处理影片页 " + moviePage);
+            	console.log("处理详情页 " + moviePage);
+                if(moviePage){                    
                     GM_xmlhttpRequest({
                         method: "GET",
                         url: moviePage,
@@ -193,17 +194,18 @@
                             for ( let actor of actorTags) {
                                 actors.push(actor.find("a").attr("title"));
                             }
-                            */
-                            resolve(actors);                   
+                            */                                             
                         }
                     });
                 }
+                resolve(actors);
             });
         }
 
         function getName(){
             return new Promise((resolve, reject) => {
                 if(moviePage){
+                	console.log("开始改名 ");
                     let actor = actors.toString();
                     console.log(actor);
                     // 构建新名称
@@ -215,8 +217,11 @@
                     console.log(newName);
                     resolve(newName);    
                 }else if (searchUrl !== javbusUncensoredSearch) {
+                	console.log("查询无码 " + searchUrl);
                     // 进行无码重查询
                     requestJavbus(fid, fh, suffix, chineseCaptions, addDate, javbusUncensoredSearch);
+                }else {
+                	resolve("没有查到结果");
                 }
             });
         }
@@ -285,8 +290,8 @@
 
         function getAvmooDetail(){
             return new Promise((resolve, reject) => {
-                if(moviePage){
-                    console.log("处理影片页 " + url_s);
+            	console.log("处理影片页 " + url_s);
+                if(moviePage){                    
                     GM_xmlhttpRequest({
                         method: "GET",
                         url: moviePage,
@@ -298,10 +303,10 @@
                             });
                             console.log(actorTags);
                             console.log(actors);
-                            resolve(actors);   
                         }
                     });
                 }
+                resolve(actors);   
             });
         }
    
@@ -321,6 +326,8 @@
                 } else if (searchUrl !== avmooUncensoredSearch) {
                     // 进行无码重查询
                     requestAvmoo(fid, fh, suffix, chineseCaptions, addDate, avmooUncensoredSearch);
+                }else {
+                	resolve("没有查到结果");
                 }
             });
         }
@@ -524,6 +531,13 @@
                 t = t.toString().replace("1PONDO_", "")
                     .replace("1PONDO-", "");
             }
+        }if (!t) {
+        	//10MUSUME
+            t = title.match(/10MUSUME[\-_]\d{6}[\-_]\d{2,4}/);
+            if (t) {
+                t = t.toString().replace("10MUSUME", "")
+                    .replace("10MUSUME-", "");
+            }
         }
         if (!t) {
             t = title.match(/HEYZO[\-_]?\d{4}/);
@@ -534,6 +548,13 @@
             if (t) {
                 t = t.toString().replace("CARIB-", "")
                     .replace("CARIB_", "");
+            }
+        }if (!t) {
+            // 加勒比
+            t = title.match(/CARIBBEAN[\-_]\d{6}[\-_]\d{3}/);
+            if (t) {
+                t = t.toString().replace("CARIBBEAN-", "")
+                    .replace("CARIBBEAN", "");
             }
         }
         if (!t) {
