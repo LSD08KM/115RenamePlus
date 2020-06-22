@@ -1,9 +1,9 @@
 // ==UserScript==
 // @name                115RenamePlus
-// @namespace           http://tampermonkey.net/
-// @version             0.8
+// @namespace           https://github.com/LSD08KM/115RenamePlus
+// @version             0.8.2
 // @description         115RenamePlus(根据现有的文件名<番号>查询并修改文件名)
-// @author              
+// @author              db117, FAN0926, LSD08KM
 // @include             https://115.com/*
 // @domain              javbus.com
 // @domain              buscdn.cam
