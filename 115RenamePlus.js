@@ -6,7 +6,7 @@
 // @author              db117, FAN0926, LSD08KM
 // @include             https://115.com/*
 // @domain              javbus.com
-// @domain              buscdn.cam
+// @domain              cdnbus.cam
 // @domain              avmoo.host
 // @domain              avsox.host
 // @domain              adult.contents.fc2.com
@@ -32,7 +32,7 @@
     let interval = setInterval(buttonInterval, 1000);
 
     // javbus
-    let javbusBase = "https://www.buscdn.cam/";
+    let javbusBase = "https://www.cdnbus.cam/";
     // 有码
     let javbusSearch = javbusBase + "search/";
     // 无码
