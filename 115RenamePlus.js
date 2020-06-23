@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name                115RenamePlus
 // @namespace           https://github.com/LSD08KM/115RenamePlus
-// @version             0.8.2
+// @version             0.8.3
 // @description         115RenamePlus(根据现有的文件名<番号>查询并修改文件名)
 // @author              db117, FAN0926, LSD08KM
 // @include             https://115.com/*
@@ -108,13 +108,14 @@
                 }
 
                 if (fid && file_name) {
-                    let fh = getVideoCode(file_name);
-                    if (fh) {
+                    let VideoCode = getVideoCode(file_name);
+                    console.log("传回:" + VideoCode.fh);
+                    if (VideoCode.fh) {
                         // 校验是否是中文字幕
-                        let chineseCaptions = checkChineseCaptions(fh, file_name);
+                        let chineseCaptions = checkChineseCaptions(VideoCode.fh, file_name);
                         // 执行查询
                         console.log("开始查询");
-                        call(fid, fh, suffix, chineseCaptions, addDate);
+                        call(fid, VideoCode.fh, suffix, chineseCaptions, VideoCode.part, addDate);
                     }
                 }
             });
@@ -123,8 +124,8 @@
     /**
      * 通过javbus进行查询
      */
-    function rename_javbus(fid, fh, suffix, chineseCaptions, addDate) {
-        requestJavbus(fid, fh, suffix, chineseCaptions, addDate, javbusSearch);
+    function rename_javbus(fid, fh, suffix, chineseCaptions, part, addDate) {
+        requestJavbus(fid, fh, suffix, chineseCaptions, part, addDate, javbusSearch);
     }
 
     /**
@@ -136,7 +137,7 @@
      * @param searchUrl               请求地址
      * @param addDate              是否添加时间
      */
-    function requestJavbus(fid, fh, suffix, chineseCaptions, addDate, searchUrl) {
+    function requestJavbus(fid, fh, suffix, chineseCaptions, part, addDate, searchUrl) {
         let title;
         let fh_o;   //网页上的番号
         let date;
@@ -177,7 +178,7 @@
 
         function getJavbusDetail(){
             return new Promise((resolve, reject) => {
-            	console.log("处理详情页 " + moviePage);
+                console.log("处理详情页 " + moviePage);
                 if(moviePage){                    
                     GM_xmlhttpRequest({
                         method: "GET",
@@ -194,11 +195,11 @@
                                 actors.push(actor.find("a").attr("title"));
                             }
                             */
-                			resolve();                                       
+                            resolve();                                       
                         }
                     });
                 }else{
-                	resolve(); 
+                    resolve(); 
                 }
             });
         }
@@ -206,11 +207,11 @@
         function getName(){
             return new Promise((resolve, reject) => {
                 if(moviePage){
-                	console.log("开始改名 ");
+                    console.log("开始改名 ");
                     let actor = actors.toString();
                     console.log(actor);
                     // 构建新名称
-                    let newName = buildNewName(fh_o, suffix, chineseCaptions, title, date, actor, addDate);
+                    let newName = buildNewName(fh_o, suffix, chineseCaptions, part, title, date, actor, addDate);
                     if (newName) {
                         // 修改名称
                         send_115(fid, newName, fh_o);
@@ -218,11 +219,11 @@
                     console.log(newName);
                     resolve(newName);    
                 }else if (searchUrl !== javbusUncensoredSearch) {
-                	console.log("查询无码 " + searchUrl);
+                    console.log("查询无码 " + searchUrl);
                     // 进行无码重查询
-                    requestJavbus(fid, fh, suffix, chineseCaptions, addDate, javbusUncensoredSearch);
+                    requestJavbus(fid, fh, suffix, chineseCaptions, part, addDate, javbusUncensoredSearch);
                 }else {
-                	resolve("没有查到结果");
+                    resolve("没有查到结果");
                 }
             });
         }
@@ -237,8 +238,8 @@
     /**
      * 通过avmoo进行查询
      */
-    function rename_avmoo(fid, fh, suffix, chineseCaptions, addDate) {
-        requestAvmoo(fid, fh, suffix, chineseCaptions, addDate, avmooSearch);
+    function rename_avmoo(fid, fh, suffix, chineseCaptions, part, addDate) {
+        requestAvmoo(fid, fh, suffix, chineseCaptions, part, addDate, avmooSearch);
     }
 
     /**
@@ -250,7 +251,7 @@
      * @param addDate           是否带时间
      * @param searchUrl         请求地址
      */
-    function requestAvmoo(fid, fh, suffix, chineseCaptions, addDate, searchUrl) {
+    function requestAvmoo(fid, fh, suffix, chineseCaptions, part, addDate, searchUrl) {
         let title;
         let fh_o;   //网页上的番号
         let date;
@@ -291,7 +292,7 @@
 
         function getAvmooDetail(){
             return new Promise((resolve, reject) => {
-            	console.log("处理影片页 " + url_s);
+                console.log("处理影片页 " + url_s);
                 if(moviePage){                    
                     GM_xmlhttpRequest({
                         method: "GET",
@@ -308,7 +309,7 @@
                     });
                 
                 }else{
-                	resolve(); 
+                    resolve(); 
                 }
             });
         }
@@ -319,7 +320,7 @@
                     let actor = actors.toString();
                     console.log(actor);
                     // 构建新名称
-                    let newName = buildNewName(fh_o, suffix, chineseCaptions, title, date, actor, addDate);
+                    let newName = buildNewName(fh_o, suffix, chineseCaptions, part, title, date, actor, addDate);
                     if (newName) {
                         // 修改名称
                         send_115(fid, newName, fh_o);
@@ -328,9 +329,9 @@
                     resolve(newName);    
                 } else if (searchUrl !== avmooUncensoredSearch) {
                     // 进行无码重查询
-                    requestAvmoo(fid, fh, suffix, chineseCaptions, addDate, avmooUncensoredSearch);
+                    requestAvmoo(fid, fh, suffix, chineseCaptions, part, addDate, avmooUncensoredSearch);
                 }else {
-                	resolve("没有查到结果");
+                    resolve("没有查到结果");
                 }
             });
         }
@@ -346,8 +347,8 @@
     /**
      * 通过FC2进行查询
      */
-    function rename_Fc2(fid, fh, suffix, chineseCaptions, addDate) {
-        requestFC2(fid, fh, suffix, chineseCaptions, addDate, Fc2Search);
+    function rename_Fc2(fid, fh, suffix, chineseCaptions, part, addDate) {
+        requestFC2(fid, fh, suffix, chineseCaptions, part, addDate, Fc2Search);
     }
 
     /**
@@ -359,7 +360,7 @@
      * @param addDate           是否带时间
      * @param searchUrl         请求地址
      */
-    function requestFC2(fid, fh, suffix, chineseCaptions, addDate, searchUrl) {
+    function requestFC2(fid, fh, suffix, chineseCaptions, part, addDate, searchUrl) {
         GM_xmlhttpRequest({
             method: "GET",
             url: searchUrl + fh +"/",
@@ -385,7 +386,7 @@
                 if (title) {
                     // 构建新名称
                     fh = "FC2-PPV-" + fh
-                    let newName = buildNewName(fh, suffix, chineseCaptions, title, date, user, addDate);
+                    let newName = buildNewName(fh, suffix, chineseCaptions, part, title, date, user, addDate);
                     if (newName) {
                         // 修改名称
                         send_115(fid, newName, fh);
@@ -393,7 +394,7 @@
                 } else if (searchUrl !== javbusUncensoredSearch) {
                     GM_notification(getDetails(fh, "商品页可能已消失"));
                     // 进行无码重查询
-                    requestJavbus(fid, fh, suffix, chineseCaptions, javbusUncensoredSearch);
+                    requestJavbus(fid, fh, suffix, chineseCaptions, part, javbusUncensoredSearch);
                 }
             }
         })
@@ -410,12 +411,15 @@
      * @param addDate           是否加日期
      * @returns {string}        新名称
      */
-    function buildNewName(fh, suffix, chineseCaptions, title, date, actor, addDate) {
+    function buildNewName(fh, suffix, chineseCaptions, part, title, date, actor, addDate) {
         if (title) {
             let newName = String(fh);
             // 有中文字幕
             if (chineseCaptions) {
                 newName = newName + "-C";
+            }
+            if (part){
+                newName = newName + "_" +  part;
             }
             // 有演员
             if (actor) {
@@ -514,17 +518,34 @@
      * @returns {string}    提取的番号
      */
     function getVideoCode(title) {
-        title = title.toUpperCase().replace("SIS001", "")
+        title = title.toUpperCase();
+        // 判断是否多集
+        let part;  //FHD1 hhb1
+        if (!part) {
+            part = title.match(/CD\d{1,2}/);            
+        }if (!part) {
+            part = title.match(/HD\d{1,2}/);            
+        }if (!part) {
+            part = title.match(/FHD\d{1,2}/);
+        }if (!part) {
+            part = title.match(/HHB\d{1,2}/);
+        }
+        if (part){
+            part = part.toString().match(/\d+/).toString();
+            console.log("识别多集:" + part);
+        }
+
+
+        title = title.replace("SIS001", "")
             .replace("1080P", "")
             .replace("720P", "")
             .replace("[JAV] [UNCENSORED]","")
             .replace("[THZU.CC]","")
             .replace("[22SHT.ME]","")
             .replace("[7SHT.ME]","")
-            .replace("-HD","")
-            .replace(".HD","")
-            .replace("-FHD","")
-            .replace(".FHD","");
+            .replace("HHB","-")
+            .replace("FHD","-")
+            .replace("HD","-");
 
         let t = title.match(/T28[\-_]\d{3,4}/);
         // 一本道
@@ -535,7 +556,7 @@
                     .replace("1PONDO-", "");
             }
         }if (!t) {
-        	//10MUSUME
+            //10MUSUME
             t = title.match(/10MUSUME[\-_]\d{6}[\-_]\d{2,4}/);
             if (t) {
                 t = t.toString().replace("10MUSUME", "")
@@ -599,7 +620,10 @@
         if (t) {
             t = t.toString().replace("_", "-");
             console.log("找到番号:" + t);
-            return t;
+            return{
+                fh: t,
+                part: part  
+            };
         }
     }
 })();
