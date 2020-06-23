@@ -595,7 +595,7 @@
             if(t){
                 console.log("找到番号:" + t[0]);
                 console.log("返回番号:" + t[1]);
-                return t[1];
+                t = t[1];
             }
         }
         // 通用
