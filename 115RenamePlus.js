@@ -449,10 +449,14 @@
                 // 出演
                 let actor = response
                             .find("div.detail_data > table:last > tbody > tr:first > td")
+                            .html();
+                if (actor.toString().match(/<.*>/)) {
+                	actor = response
+                            .find("div.detail_data > table:last > tbody > tr:first > td > a")
                             .html()
                             .trim();
-                if (actor.match(/<.*>/)) {
-                	actor.find("a").html().trim();
+                }else{
+                	actor = actor.trim();
                 }
                 // 品番：	200GANA-2295
 
@@ -462,7 +466,7 @@
                             .html()
                             .trim();
                 date = date.replace(/\s+/g,"").replace(/:/g, "").replace(/\//g, "-").trim();
-
+                
                 if (title) {
                     // 构建新名称
                     let newName = buildNewName(fh, suffix, chineseCaptions, part, title, date, actor, addDate);
@@ -475,6 +479,7 @@
                     // 进行无码重查询
                     requestJavbus(fid, fh, suffix, chineseCaptions, part, javbusUncensoredSearch);
                 }
+                
             }
         })
     }
