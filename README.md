@@ -11,9 +11,11 @@
 
 右击文件夹或文件，点击站点选项，自动重命名。
 
-<img src="https://github.com/LSD08KM/115RenamePlus/blob/master/img/00.png" style="zoom:50%;" />
+<img src="https://github.com/LSD08KM/115RenamePlus/blob/master/img/01.png" style="zoom:50%;" />
 
 支持多选。
+
+支持javbus、avmoo、FC2、mgstage 。
 
 ### 改名后的格式为：
 
