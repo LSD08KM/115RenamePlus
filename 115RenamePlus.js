@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name                115RenamePlus
 // @namespace           https://github.com/LSD08KM/115RenamePlus
-// @version             0.8.4
+// @version             0.8.5
 // @description         115RenamePlus(根据现有的文件名<番号>查询并修改文件名)
 // @author              db117, FAN0926, LSD08KM
 // @include             https://115.com/*
@@ -10,6 +10,7 @@
 // @domain              avmoo.host
 // @domain              avsox.host
 // @domain              adult.contents.fc2.com
+// @domain              mgstage.com
 // @grant               GM_notification
 // @grant               GM_xmlhttpRequest
 // ==/UserScript==
@@ -24,6 +25,7 @@
                 <a id="rename_all_javbus_date" class="mark" href="javascript:;">改名javbus</a>
                 <a id="rename_all_avmoo_date" class="mark" href="javascript:;">改名avmoo</a>
                 <a id="rename_all_Fc2_date" class="mark" href="javascript:;">改名FC2</a>
+                <a id="rename_all_mgstage_date" class="mark" href="javascript:;">改名mgstage</a>
             </li>
         `;
     /**
@@ -46,6 +48,10 @@
 
     //FC2
     let Fc2Search = "https://adult.contents.fc2.com/article/";
+
+    //mgstage
+    let mgstageSearch = "https://www.mgstage.com/product/product_detail/";    
+    
     'use strict';
 
     /**
@@ -57,15 +63,19 @@
             open_dir.before(rename_list);
             $("a#rename_all_javbus_date").click(
                 function () {
-                    rename(rename_javbus, true);
+                    rename(rename_javbus, true, "javbus");
                 });
             $("a#rename_all_avmoo_date").click(
                 function () {
-                    rename(rename_avmoo, true);
+                    rename(rename_avmoo, true, "avmoo");
                 });
             $("a#rename_all_Fc2_date").click(
                 function () {
-                    rename(rename_Fc2, true);
+                    rename(rename_Fc2, true, "fc2");
+                });
+            $("a#rename_all_mgstage_date").click(
+                function () {
+                    rename(rename_mgstage, true, "mgstage");
                 });
             console.log("添加按钮");
             // 结束定时任务
@@ -77,8 +87,9 @@
      * 执行改名方法
      * @param call       回调函数
      * @param addDate   是否添加时间
+     * @param site   	网站
      */
-    function rename(call, addDate) {
+    function rename(call, addDate, site) {
         // 获取所有已选择的文件
         let list = $("iframe[rel='wangpan']")
             .contents()
@@ -109,7 +120,13 @@
                 }
 
                 if (fid && file_name) {
-                    let VideoCode = getVideoCode(file_name);
+                	let VideoCode;
+                	if (site == "mgstage"){
+                    	VideoCode = getVideoCodemgstage(file_name);
+                	}else{
+                		VideoCode = getVideoCode(file_name);
+                	}
+
                     console.log("传回:" + VideoCode.fh);
                     if (VideoCode.fh) {
                         // 校验是否是中文字幕
@@ -380,9 +397,6 @@
                             .find("div.items_article_Releasedate p")
                             .html();
                 date = date.replace(/\s+/g,"").replace(/:/g, "").replace(/\//g, "-");
-                console.log(title);
-                console.log(date);
-                console.log("user " + user);
 
                 if (title) {
                     // 构建新名称
@@ -401,6 +415,69 @@
         })
     }
 
+    /**
+     * 通过mgstage进行查询
+     */
+    function rename_mgstage(fid, fh, suffix, chineseCaptions, part, addDate) {
+        requestmgstage(fid, fh, suffix, chineseCaptions, part, addDate, mgstageSearch);
+    }
+
+    /**
+     * 请求FC2,并请求115进行改名
+     * @param fid               文件id
+     * @param fh                番号
+     * @param suffix            后缀
+     * @param chineseCaptions   是否有中文字幕
+     * @param addDate           是否带时间
+     * @param searchUrl         请求地址
+     */
+    function requestmgstage(fid, fh, suffix, chineseCaptions, part, addDate, searchUrl) {
+        GM_xmlhttpRequest({
+            method: "GET",
+            url: searchUrl + fh +"/",
+            onload: xhr => {
+                // 匹配标题
+                let response = $(xhr.responseText);
+                let title = response
+                    .find("div.common_detail_cover > h1")
+                    .html()
+                    .trim();
+                if (title.length > 80){
+                	title = title.substring(0, 80);
+                	title += "...";
+                }
+                // 出演
+                let actor = response
+                            .find("div.detail_data > table:last > tbody > tr:first > td")
+                            .html()
+                            .trim();
+                if (actor.match(/<.*>/)) {
+                	actor.find("a").html().trim();
+                }
+                // 品番：	200GANA-2295
+
+                // 配信開始日：	2020/06/23
+                let date = response
+                            .find("div.detail_data > table:last > tbody > tr:eq(4) > td")
+                            .html()
+                            .trim();
+                date = date.replace(/\s+/g,"").replace(/:/g, "").replace(/\//g, "-").trim();
+
+                if (title) {
+                    // 构建新名称
+                    let newName = buildNewName(fh, suffix, chineseCaptions, part, title, date, actor, addDate);
+                    if (newName) {
+                        // 修改名称
+                        send_115(fid, newName, fh);
+                    }
+                } else if (searchUrl !== javbusUncensoredSearch) {
+                    GM_notification(getDetails(fh, "商品页可能已消失"));
+                    // 进行无码重查询
+                    requestJavbus(fid, fh, suffix, chineseCaptions, part, javbusUncensoredSearch);
+                }
+            }
+        })
+    }
     /**
      * 构建新名称：番号 中文字幕 日期 标题
      * @param fh                番号
@@ -617,6 +694,56 @@
         if (!t) {
             t = title.match(/\d+[\-_]?\d+/);
         }
+        if (!t) {
+            console.log("没找到番号:" + title);
+            return false;
+        }
+        if (t) {
+            t = t.toString().replace("_", "-");
+            console.log("找到番号:" + t);
+            return{
+                fh: t,
+                part: part
+            };
+        }
+    }
+
+    /**
+     * 获取mgstage番号
+     * @param title         源标题
+     * @returns {string}    提取的番号
+     */
+    function getVideoCodemgstage(title) {
+        title = title.toUpperCase();
+        console.log("传入title: " + title);
+        // 判断是否多集
+        let part;  //FHD1 hhb1
+        if (!part) {
+            part = title.match(/CD\d{1,2}/);
+        }if (!part) {
+            part = title.match(/HD\d{1,2}/);
+        }if (!part) {
+            part = title.match(/FHD\d{1,2}/);
+        }if (!part) {
+            part = title.match(/HHB\d{1,2}/);
+        }
+        if (part){
+            part = part.toString().match(/\d+/).toString();
+            console.log("识别多集:" + part);
+        }
+        title = title.replace("SIS001", "")
+            .replace("1080P", "")
+            .replace("720P", "")
+            .replace("[JAV] [UNCENSORED]","")
+            .replace("[THZU.CC]","")
+            .replace("[22SHT.ME]","")
+            .replace("[7SHT.ME]","")
+            .replace(".HHB","分段")
+            .replace(".FHD","分段")
+            .replace(".HD","分段");
+        console.log("修正后的title: " + title);
+
+        let t = title.match(/\d{3,4}[A-Z]{3,4}[\-_]?\d{3,4}/);
         if (!t) {
             console.log("没找到番号:" + title);
             return false;
