@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name                115RenamePlus
 // @namespace           https://github.com/LSD08KM/115RenamePlus
-// @version             0.8.3
+// @version             0.8.4
 // @description         115RenamePlus(根据现有的文件名<番号>查询并修改文件名)
 // @author              db117, FAN0926, LSD08KM
 // @include             https://115.com/*
@@ -103,7 +103,8 @@
                     // 处理后缀
                     let lastIndexOf = file_name.lastIndexOf('.');
                     if (lastIndexOf !== -1) {
-                        suffix = file_name.substr(lastIndexOf, file_name.length);
+                        suffix = file_name.substring(lastIndexOf, file_name.length);
+                        file_name = file_name.substring(0, lastIndexOf);
                     }
                 }
 
@@ -179,7 +180,7 @@
         function getJavbusDetail(){
             return new Promise((resolve, reject) => {
                 console.log("处理详情页 " + moviePage);
-                if(moviePage){                    
+                if(moviePage){
                     GM_xmlhttpRequest({
                         method: "GET",
                         url: moviePage,
@@ -195,11 +196,11 @@
                                 actors.push(actor.find("a").attr("title"));
                             }
                             */
-                            resolve();                                       
+                            resolve();
                         }
                     });
                 }else{
-                    resolve(); 
+                    resolve();
                 }
             });
         }
@@ -217,7 +218,7 @@
                         send_115(fid, newName, fh_o);
                     }
                     console.log(newName);
-                    resolve(newName);    
+                    resolve(newName);
                 }else if (searchUrl !== javbusUncensoredSearch) {
                     console.log("查询无码 " + searchUrl);
                     // 进行无码重查询
@@ -234,7 +235,7 @@
                 console.log("结束 " + result);
             });
     }
-    
+
     /**
      * 通过avmoo进行查询
      */
@@ -293,7 +294,7 @@
         function getAvmooDetail(){
             return new Promise((resolve, reject) => {
                 console.log("处理影片页 " + url_s);
-                if(moviePage){                    
+                if(moviePage){
                     GM_xmlhttpRequest({
                         method: "GET",
                         url: moviePage,
@@ -304,16 +305,16 @@
                                 actors.push($(this).find("span").html());
                             });
                             console.log(actors);
-                            resolve(); 
+                            resolve();
                         }
                     });
-                
+
                 }else{
-                    resolve(); 
+                    resolve();
                 }
             });
         }
-   
+
         function getName(){
             return new Promise((resolve, reject) => {
                 if(moviePage){
@@ -326,7 +327,7 @@
                         send_115(fid, newName, fh_o);
                     }
                     console.log(newName);
-                    resolve(newName);    
+                    resolve(newName);
                 } else if (searchUrl !== avmooUncensoredSearch) {
                     // 进行无码重查询
                     requestAvmoo(fid, fh, suffix, chineseCaptions, part, addDate, avmooUncensoredSearch);
@@ -342,7 +343,7 @@
                 console.log("结束 " + result);
             });
     }
-                            
+
 
     /**
      * 通过FC2进行查询
@@ -382,7 +383,7 @@
                 console.log(title);
                 console.log(date);
                 console.log("user " + user);
-                
+
                 if (title) {
                     // 构建新名称
                     fh = "FC2-PPV-" + fh
@@ -519,12 +520,13 @@
      */
     function getVideoCode(title) {
         title = title.toUpperCase();
+        console.log("传入title: " + title);
         // 判断是否多集
         let part;  //FHD1 hhb1
         if (!part) {
-            part = title.match(/CD\d{1,2}/);            
+            part = title.match(/CD\d{1,2}/);
         }if (!part) {
-            part = title.match(/HD\d{1,2}/);            
+            part = title.match(/HD\d{1,2}/);
         }if (!part) {
             part = title.match(/FHD\d{1,2}/);
         }if (!part) {
@@ -543,9 +545,10 @@
             .replace("[THZU.CC]","")
             .replace("[22SHT.ME]","")
             .replace("[7SHT.ME]","")
-            .replace("HHB","-")
-            .replace("FHD","-")
-            .replace("HD","-");
+            .replace(".HHB","分段")
+            .replace(".FHD","分段")
+            .replace(".HD","分段");
+        console.log("修正后的title: " + title);
 
         let t = title.match(/T28[\-_]\d{3,4}/);
         // 一本道
@@ -587,11 +590,11 @@
         }
         if (!t) {
             // Jukujo-Club | 熟女俱乐部
-            t = title.match(/JUKUJO[-_]\d{4}/);
+            t = title.match(/JUKUJO[\-_]\d{4}/);
         }
         if (!t) {
             // FC2 PPV
-            t = title.match(/FC2[-_ ]PPV[-_ ](\d{5,8})/);
+            t = title.match(/FC2[\-_]?PPV[\-_]?(\d{5,8})/);
             if(t){
                 console.log("找到番号:" + t[0]);
                 console.log("返回番号:" + t[1]);
@@ -600,7 +603,7 @@
         }
         // 通用
         if (!t) {
-            t = title.match(/[A-Z]{2,5}[-_]\d{3,5}/);
+            t = title.match(/[A-Z]{2,5}[\-_]?\d{3,5}/);
         }
         if (!t) {
             t = title.match(/\d{6}[\-_]\d{2,4}/);
@@ -609,20 +612,21 @@
             t = title.match(/[A-Z]+\d{3,5}/);
         }
         if (!t) {
-            t = title.match(/[A-Za-z]+[-_]?\d+/);
+            t = title.match(/[A-Za-z]+[\-_]?\d+/);
         }
         if (!t) {
-            t = title.match(/\d+[-_]?\d+/);
+            t = title.match(/\d+[\-_]?\d+/);
         }
         if (!t) {
-            t = title;
+            console.log("没找到番号:" + title);
+            return false;
         }
         if (t) {
             t = t.toString().replace("_", "-");
             console.log("找到番号:" + t);
             return{
                 fh: t,
-                part: part  
+                part: part
             };
         }
     }
