@@ -183,8 +183,9 @@
                         .html();
                     // 时间
                     date = response
-                        .find("div.photo-info date:last")
-                        .html();
+                            .find("div.photo-info > span")
+                            .html();
+                    date = date.match(/\d{4}\-\d{2}\-\d{2}/);
                     // 详情页
                     moviePage = response
                         .find("a.movie-box")
