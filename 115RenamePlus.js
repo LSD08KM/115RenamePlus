@@ -1,12 +1,14 @@
 // ==UserScript==
 // @name                115RenamePlus
 // @namespace           https://github.com/LSD08KM/115RenamePlus
-// @version             0.8.5
+// @version             0.8.6
 // @description         115RenamePlus(根据现有的文件名<番号>查询并修改文件名)
 // @author              db117, FAN0926, LSD08KM
 // @include             https://115.com/*
 // @domain              javbus.com
-// @domain              cdnbus.cam
+// @domain              dmmbus.cam
+// @domain              seedmm.cam
+// @domain              javbus.cam
 // @domain              avmoo.host
 // @domain              avsox.host
 // @domain              adult.contents.fc2.com
@@ -34,7 +36,7 @@
     let interval = setInterval(buttonInterval, 1000);
 
     // javbus
-    let javbusBase = "https://www.cdnbus.cam/";
+    let javbusBase = "https://www.javbus.com/";
     // 有码
     let javbusSearch = javbusBase + "search/";
     // 无码
@@ -181,8 +183,9 @@
                         .html();
                     // 时间
                     date = response
-                        .find("div.photo-info date:last")
-                        .html();
+                            .find("div.photo-info > span")
+                            .html();
+                    date = date.match(/\d{4}\-\d{2}\-\d{2}/);
                     // 详情页
                     moviePage = response
                         .find("a.movie-box")
@@ -295,8 +298,9 @@
                             .html();
                         // 时间
                         date = response
-                            .find("div.photo-info date:last")
+                            .find("div.photo-info > span")
                             .html();
+                        date = date.match(/\d{4}\-\d{2}\-\d{2}/);
                         // 详情页
                         moviePage = response
                             .find("a.movie-box")
@@ -649,7 +653,7 @@
             }
         }
         if (!t) {
-            t = title.match(/HEYZO[\-_]?\d{4}/);
+            t = title.match(/HEYZO[\-_]{0,1}\d{4}/);
         }
         if (!t) {
             // 加勒比
@@ -676,7 +680,7 @@
         }
         if (!t) {
             // FC2 PPV
-            t = title.match(/FC2[\-_]?PPV[\-_]?(\d{5,8})/);
+            t = title.match(/FC2[\-_]{0,1}PPV[\-_]{0,1}(\d{5,8})/);
             if(t){
                 console.log("找到番号:" + t[0]);
                 console.log("返回番号:" + t[1]);
@@ -685,7 +689,7 @@
         }
         // 通用
         if (!t) {
-            t = title.match(/[A-Z]{2,5}[\-_]?\d{3,5}/);
+            t = title.match(/[A-Z]{2,5}[\-_]{0,1}\d{3,5}/);
         }
         if (!t) {
             t = title.match(/\d{6}[\-_]\d{2,4}/);
@@ -694,10 +698,10 @@
             t = title.match(/[A-Z]+\d{3,5}/);
         }
         if (!t) {
-            t = title.match(/[A-Za-z]+[\-_]?\d+/);
+            t = title.match(/[A-Za-z]+[\-_]{0,1}\d+/);
         }
         if (!t) {
-            t = title.match(/\d+[\-_]?\d+/);
+            t = title.match(/\d+[\-_]{0,1}\d+/);
         }
         if (!t) {
             console.log("没找到番号:" + title);
