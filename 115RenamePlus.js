@@ -11,6 +11,7 @@
 // @domain              javbus.cam
 // @domain              avmoo.host
 // @domain              avsox.host
+// @domain              javlibrary.com
 // @domain              adult.contents.fc2.com
 // @domain              mgstage.com
 // @grant               GM_notification
@@ -56,7 +57,8 @@
     let mgstageSearch = "https://www.mgstage.com/product/product_detail/";    
     
     //javlibrary
-    let javlibrarySearch = "https://www.javlibrary.com/cn/vl_searchbyid.php?keyword=";        
+    let javlibraryDetail = "https://www.javlibrary.com/cn/?v=";
+    let javlibrarySearch = "https://www.javlibrary.com/cn/vl_searchbyid.php?keyword="; 
     'use strict';
 
     /**
@@ -314,6 +316,8 @@
                             .html();
                         console.log(title + fh_o + date);
                         resolve(moviePage);
+                    }else{
+                        console.log("没有搜索到" + fh);
                     }
                 }
             });
@@ -321,7 +325,7 @@
 
         function getAvmooDetail(){
             return new Promise((resolve, reject) => {
-                console.log("处理影片页 " + url_s);
+                console.log("处理影片页 " + moviePage);
                 if(moviePage){
                     GM_xmlhttpRequest({
                         method: "GET",
@@ -366,7 +370,7 @@
         }
 
         getAvmooSearch.then(getAvmooDetail)
-            .then(getName)
+            .then(getName,getName)
             .then(function(result){
                 console.log("结束 " + result);
             });
@@ -500,7 +504,7 @@
      * 通过javlibrary进行查询 
      */
     function rename_javlibrary(fid, fh, suffix, chineseCaptions, part, addDate) {
-        requestmgstage(fid, fh, suffix, chineseCaptions, part, addDate, javlibrarySearch);
+        requestjavlibrary(fid, fh, suffix, chineseCaptions, part, addDate, javlibrarySearch);
     }
 
     /**
@@ -513,44 +517,104 @@
      * @param searchUrl         请求地址
      */
     function requestjavlibrary(fid, fh, suffix, chineseCaptions, part, addDate, searchUrl) {
-        GM_xmlhttpRequest({
-            method: "GET",
-            url: searchUrl + fh,
-            onload: xhr => {
-                // 匹配标题
-                let response = $(xhr.responseText);
-                let title = response
-                    .find("div#video_title > h3 > a")
-                    .html();
-                // 识别码
-                let fh_0 = response
-                    .find("div#video_id tr:last")
-                    .html();
-                // 发行日期:                
-                let date = response
-                            .find("div#video_date tr:last")
-                            .html();
-                // 演员:
-                let actorTags = response.find("a.avatar-box").each(function(){
-                    actors.push($(this).find("span").html());
-                });
-                console.log(actors);
+        let title;
+        let fh_o;   //网页上的番号
+        let date;
+        let moviePage;
+        let actors = [];
+        let url_s = searchUrl + fh;
 
-                if (title) {
+        let getjavlibrarySearch = new Promise((resolve, reject) => {
+            console.log("处理搜索页 " + url_s);
+            GM_xmlhttpRequest({
+                method: "GET",
+                url: url_s,
+                onload: xhr => {
+                    let response = $(xhr.responseText);
+                    if (!(response.find("div.titlebox").length)) {
+                        // vid
+                        let vid = response
+                            .find("div#rightcolumn > div.videothumblist > div.videos > div.video")
+                            .attr("id");
+                        vid = vid.substring(4, vid.length);
+                        moviePage = javlibraryDetail + vid;
+                        // 标题
+                        let title = response
+                            .find("div#rightcolumn > div.videothumblist > div.videos > div.video > a > div.title")
+                            .html();
+                        console.log("找到" + moviePage + " " + title);
+                        resolve(moviePage);
+                    }else{
+                        console.log("没有搜索到" + fh);
+                    }
+                }
+            });
+        });
+
+        function getjavlibraryDetail(){
+            return new Promise((resolve, reject) => {
+                console.log("处理影片页 " + moviePage);
+                if(moviePage){
+                    GM_xmlhttpRequest({
+                        method: "GET",
+                        url: moviePage,
+                        onload: xhr => {
+                            // 识别码
+                            let fh_0 = response
+                                .find("div#video_id td:last")
+                                .html();
+                            // 发行日期:                
+                            let date = response
+                                        .find("div#video_date td:last")
+                                        .html();
+                            // 演员: https://www.javlibrary.com/cn/?v=javme2yi4q
+                            let actorTags = response.find("div#video_cast span.star").each(function(){
+                                actors.push($(this).find("a").html());
+                                if($(this).next().length > 1) { //存在多个艺名
+                                    $(this).nextUntil("span.icn_favstar").each(function(){
+                                        actors.push( "[" + $(this).html() + "]");
+                                    });
+                                }
+                            });
+                            console.log(actors);
+                            resolve();
+                        }
+                    });
+
+                }else{
+                    resolve();
+                }
+            });
+        }
+
+        function getName(){
+            return new Promise((resolve, reject) => {
+                if(moviePage){
+                    let actor = actors.toString();
+                    console.log(actor);
                     // 构建新名称
-                    let newName = buildNewName(fh_0, suffix, chineseCaptions, part, title, date, actors, addDate);
+                    let newName = buildNewName(fh_o, suffix, chineseCaptions, part, title, date, actor, addDate);
                     if (newName) {
                         // 修改名称
-                        send_115(fid, newName, fh);
+                        send_115(fid, newName, fh_o);
                     }
-                } else if (searchUrl !== javbusUncensoredSearch) {
-                    GM_notification(getDetails(fh, "商品页可能已消失"));
+                    console.log(newName);
+                    resolve(newName);
+                }else if (searchUrl !== javbusUncensoredSearch) {
+                    console.log("查询无码 " + searchUrl);
                     // 进行无码重查询
-                    requestJavbus(fid, fh, suffix, chineseCaptions, part, javbusUncensoredSearch);
+                    requestJavbus(fid, fh, suffix, chineseCaptions, part, addDate, javbusUncensoredSearch);
+                }else {
+                    resolve("没有查到结果");
                 }
-                
-            }
-        })
+            });
+        }
+
+        getjavlibrarySearch.then(getjavlibraryDetail)
+            .then(getName,getName)
+            .then(function(result){
+                console.log("结束 " + result);
+            });
     }
     /**
      * 构建新名称：番号 中文字幕 日期 标题
