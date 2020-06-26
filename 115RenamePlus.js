@@ -26,7 +26,6 @@
             <li id="rename_list">
                 <a id="rename_all_javbus_date" class="mark" href="javascript:;">改名javbus</a>
                 <a id="rename_all_avmoo_date" class="mark" href="javascript:;">改名avmoo</a>
-                <a id="rename_all_javlibrary_date" class="mark" href="javascript:;">改名javlibrary</a>
                 <a id="rename_all_Fc2_date" class="mark" href="javascript:;">改名FC2</a>
                 <a id="rename_all_mgstage_date" class="mark" href="javascript:;">改名mgstage</a>
             </li>
@@ -54,9 +53,7 @@
 
     //mgstage
     let mgstageSearch = "https://www.mgstage.com/product/product_detail/";    
-    
-    //javlibrary
-    let javlibrarySearch = "https://www.javlibrary.com/cn/vl_searchbyid.php?keyword=";        
+       
     'use strict';
 
     /**
@@ -81,10 +78,6 @@
             $("a#rename_all_mgstage_date").click(
                 function () {
                     rename(rename_mgstage, true, "mgstage");
-                });
-            $("a#rename_all_javlibrary_date").click(
-                function () {
-                    rename(rename_javlibrary, true, "javlibrary");
                 });
             console.log("添加按钮");
             // 结束定时任务
@@ -496,62 +489,6 @@
         })
     }
 
-    /**
-     * 通过javlibrary进行查询 
-     */
-    function rename_javlibrary(fid, fh, suffix, chineseCaptions, part, addDate) {
-        requestmgstage(fid, fh, suffix, chineseCaptions, part, addDate, javlibrarySearch);
-    }
-
-    /**
-     * 请求FC2,并请求115进行改名
-     * @param fid               文件id
-     * @param fh                番号
-     * @param suffix            后缀
-     * @param chineseCaptions   是否有中文字幕
-     * @param addDate           是否带时间
-     * @param searchUrl         请求地址
-     */
-    function requestjavlibrary(fid, fh, suffix, chineseCaptions, part, addDate, searchUrl) {
-        GM_xmlhttpRequest({
-            method: "GET",
-            url: searchUrl + fh,
-            onload: xhr => {
-                // 匹配标题
-                let response = $(xhr.responseText);
-                let title = response
-                    .find("div#video_title > h3 > a")
-                    .html();
-                // 识别码
-                let fh_0 = response
-                    .find("div#video_id tr:last")
-                    .html();
-                // 发行日期:                
-                let date = response
-                            .find("div#video_date tr:last")
-                            .html();
-                // 演员:
-                let actorTags = response.find("a.avatar-box").each(function(){
-                    actors.push($(this).find("span").html());
-                });
-                console.log(actors);
-
-                if (title) {
-                    // 构建新名称
-                    let newName = buildNewName(fh_0, suffix, chineseCaptions, part, title, date, actors, addDate);
-                    if (newName) {
-                        // 修改名称
-                        send_115(fid, newName, fh);
-                    }
-                } else if (searchUrl !== javbusUncensoredSearch) {
-                    GM_notification(getDetails(fh, "商品页可能已消失"));
-                    // 进行无码重查询
-                    requestJavbus(fid, fh, suffix, chineseCaptions, part, javbusUncensoredSearch);
-                }
-                
-            }
-        })
-    }
     /**
      * 构建新名称：番号 中文字幕 日期 标题
      * @param fh                番号
