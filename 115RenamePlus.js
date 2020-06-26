@@ -53,7 +53,7 @@
 
     //mgstage
     let mgstageSearch = "https://www.mgstage.com/product/product_detail/";    
-    
+       
     'use strict';
 
     /**
@@ -89,7 +89,7 @@
      * 执行改名方法
      * @param call       回调函数
      * @param addDate   是否添加时间
-     * @param site   	网站
+     * @param site      网站
      */
     function rename(call, addDate, site) {
         // 获取所有已选择的文件
@@ -122,12 +122,12 @@
                 }
 
                 if (fid && file_name) {
-                	let VideoCode;
-                	if (site == "mgstage"){
-                    	VideoCode = getVideoCodemgstage(file_name);
-                	}else{
-                		VideoCode = getVideoCode(file_name);
-                	}
+                    let VideoCode;
+                    if (site == "mgstage"){
+                        VideoCode = getVideoCodemgstage(file_name);
+                    }else{
+                        VideoCode = getVideoCode(file_name);
+                    }
 
                     console.log("传回:" + VideoCode.fh);
                     if (VideoCode.fh) {
@@ -447,24 +447,25 @@
                     .html()
                     .trim();
                 if (title.length > 80){
-                	title = title.substring(0, 80);
-                	title += "...";
+                    title = title.substring(0, 80);
+                    title += "...";
                 }
                 // 出演
                 let actor = response
                             .find("div.detail_data > table:last > tbody > tr:first > td")
                             .html();
+                let actors = "";
+                // 判断<a>
                 if (actor.toString().match(/<.*>/)) {
-                	actor = response
-                            .find("div.detail_data > table:last > tbody > tr:first > td > a")
-                            .html()
-                            .trim();
+                    let actorTags = response.find("div.detail_data > table:last > tbody > tr:first > td > a").each(function(){
+                        actors.push($(this).html().trim());
+                    });
                 }else{
-                	actor = actor.trim();
+                    actors = actor.trim();
                 }
-                // 品番：	200GANA-2295
+                // 品番：  200GANA-2295
 
-                // 配信開始日：	2020/06/23
+                // 配信開始日：   2020/06/23
                 let date = response
                             .find("div.detail_data > table:last > tbody > tr:eq(4) > td")
                             .html()
@@ -473,7 +474,7 @@
                 
                 if (title) {
                     // 构建新名称
-                    let newName = buildNewName(fh, suffix, chineseCaptions, part, title, date, actor, addDate);
+                    let newName = buildNewName(fh, suffix, chineseCaptions, part, title, date, actors, addDate);
                     if (newName) {
                         // 修改名称
                         send_115(fid, newName, fh);
@@ -487,6 +488,7 @@
             }
         })
     }
+
     /**
      * 构建新名称：番号 中文字幕 日期 标题
      * @param fh                番号
