@@ -460,7 +460,7 @@
                     let actorTags = response.find("div.detail_data > table:last > tbody > tr:first > td > a").each(function(){
                         actors.push($(this).html().trim());
                     });
-                    let actors = actors.toString();
+                    actors = actors.toString();
                 }else{
                     actors = actor.trim();
                 }
