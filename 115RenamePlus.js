@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name                115RenamePlus
 // @namespace           https://github.com/LSD08KM/115RenamePlus
-// @version             0.8.6
+// @version             0.8.8
 // @description         115RenamePlus(根据现有的文件名<番号>查询并修改文件名)
 // @author              db117, FAN0926, LSD08KM
 // @include             https://115.com/*
@@ -755,7 +755,10 @@
             .replace(".HD","分段");
         console.log("修正后的title: " + title);
 
-        let t = title.match(/\d{3,4}[A-Z]{3,4}[\-_]?\d{3,4}/);
+        let t = title.match(/\d{3,4}[A-Z]{3,4}[\-_]?\d{3,4}/)
+        if (!t) {  // シロウトTV @SIRO-3585
+            t = title.match(/[A-Z]{2,5}[\-_]{1}\d{3,5}/);
+        }
         if (!t) {
             console.log("没找到番号:" + title);
             return false;
