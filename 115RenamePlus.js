@@ -454,12 +454,13 @@
                 let actor = response
                             .find("div.detail_data > table:last > tbody > tr:first > td")
                             .html();
-                let actors = "";
+                let actors = [];
                 // 判断<a>
                 if (actor.toString().match(/<.*>/)) {
                     let actorTags = response.find("div.detail_data > table:last > tbody > tr:first > td > a").each(function(){
                         actors.push($(this).html().trim());
                     });
+                    let actors = actors.toString();
                 }else{
                     actors = actor.trim();
                 }
