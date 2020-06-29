@@ -436,6 +436,7 @@
      * @param searchUrl         请求地址
      */
     function requestmgstage(fid, fh, suffix, chineseCaptions, part, addDate, searchUrl) {
+        console.log("处理影片页 " + searchUrl + fh +"/");
         GM_xmlhttpRequest({
             method: "GET",
             url: searchUrl + fh +"/",
@@ -755,7 +756,7 @@
             .replace(".HD","分段");
         console.log("修正后的title: " + title);
 
-        let t = title.match(/\d{3,4}[A-Z]{3,4}[\-_]?\d{3,4}/)
+        let t = title.match(/\d{3,4}[A-Z]{3,5}[\-_]?\d{3,4}/)
         if (!t) {  // シロウトTV @SIRO-3585
             t = title.match(/[A-Z]{2,5}[\-_]{1}\d{3,5}/);
         }
