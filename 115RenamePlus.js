@@ -596,9 +596,13 @@
             return true;
         }
         let regExp = new RegExp(fh + "[_-]?C");
+        let regExpCD = new RegExp(fh + "[_-]?CD");
         let match = title.toUpperCase().match(regExp);
-        if (match) {
-            return true;
+        let matchCD = title.toUpperCase().match(regExpCD);
+        if (matchCD) {} else {
+            if (match) {
+                return true;
+            }
         }
     }
 
