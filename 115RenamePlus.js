@@ -9,8 +9,10 @@
 // @domain              dmmbus.cam
 // @domain              seedmm.cam
 // @domain              javbus.cam
-// @domain              avmoo.host
-// @domain              avsox.host
+// @domain              avmoo.com
+// @domain              avmoo.cyou
+// @domain              avsox.com
+// @domain              avsox.website
 // @domain              adult.contents.fc2.com
 // @domain              mgstage.com
 // @grant               GM_notification
@@ -44,9 +46,9 @@
 
     // avmoo
     // 有码
-    let avmooSearch = "https://avmoo.host/cn/search/";
+    let avmooSearch = "https://avmoo.cyou/cn/search/";
     // 无码
-    let avmooUncensoredSearch = "https://avsox.host/cn/search/";
+    let avmooUncensoredSearch = "https://avsox.website/cn/search/";
 
     //FC2
     let Fc2Search = "https://adult.contents.fc2.com/article/";
