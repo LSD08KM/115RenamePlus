@@ -33,3 +33,9 @@ ABC-123-C_2 演员1,演员2 标题 2000-01-01
 - 多个演员时用,分割。
   - FC2无法获取演员名，获取的是卖家名。
 - 在文件名最后加上发行日
+
+
+## 你领红包，我得赏金
+
+不是打赏
+<img src="https://github.com/LSD08KM/115RenamePlus/blob/master/img/red.jpg" style="zoom:50%;" />
