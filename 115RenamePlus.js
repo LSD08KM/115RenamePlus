@@ -6,9 +6,9 @@
 // @author              db117, FAN0926, LSD08KM
 // @include             https://115.com/*
 // @domain              javbus.com
-// @domain              dmmbus.cam
-// @domain              seedmm.cam
-// @domain              javbus.cam
+// @domain              buscdn.me
+// @domain              busfan.club
+// @domain              buscdn.blog
 // @domain              avmoo.com
 // @domain              avmoo.cyou
 // @domain              avsox.com
