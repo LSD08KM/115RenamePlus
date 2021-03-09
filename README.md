@@ -5,17 +5,20 @@
 
 必须在浏览器扩展[Tampermonkey](http://www.tampermonkey.net/)中安装使用。
 
-支持搜索三个站点，需要保证浏览器能正常访问到。
+支持搜索4个站点，需要保证浏览器能正常访问到。（特别是mgstage，需要先访问一次网站，把是否满18岁的提示通过以后，才能正常使用）
 
 ## 功能
 
-右击文件夹或文件，点击站点选项，自动重命名。（需要刷新网页查看改名结果）
+右击文件夹或文件，点击站点选项，自动重命名。
+
+<img src="https://github.com/LSD08KM/115RenamePlus/blob/master/img/01.png" style="zoom:50%;" />
 
 支持多选。
 
 支持javbus、avmoo、FC2、mgstage 。
 
-<img src="https://github.com/LSD08KM/115RenamePlus/blob/master/img/01.png" style="zoom:50%;" />
+推荐使用**视频改名avmoo+javbus 选项**
+由于javbus搜索引擎排序偶尔有误、avmoo演员名不全，所以用avmoo匹配编号之后，在javbus获取详细信息。
 
 ### 改名后的格式为：
 
@@ -24,12 +27,18 @@
 ```
 例如
 ```
-ABC-123-C_2 演员1,演员2 标题 2000-01-01
+ABC-123-C_P2 演员1,演员2 标题 2000-01-01
 ```
 
 - 编号是网站所显示的标准编号
 - 原文件名的编号后如果有“中文字幕”、“-C”、“_C”、“C”，改名后会在编号后加上"-C"
-- 源文件名存在多集字符时，例如”CD1”、”HD2”、”FHD3”、”hhb4”，改名后会在编号后加上”_集数”
+- 源文件名存在多集字符时，例如”CD1”、”HD2”、”FHD3”、”hhb4”，改名后会在编号后加上”_P集数”
 - 多个演员时用,分割。
   - FC2无法获取演员名，获取的是卖家名。
 - 在文件名最后加上发行日
+
+
+## 你领红包，我得赏金
+
+不是打赏
+<img src="https://github.com/LSD08KM/115RenamePlus/blob/master/img/red.jpg" style="zoom:50%;" />
