@@ -13,7 +13,6 @@
 
 <img src="https://github.com/LSD08KM/115RenamePlus/blob/master/img/01.png" height="230px;" />
 
-<img src="D:\github\115RenamePlus\img\01.png" height="230px;" />
 
 尽量使用**视频改名avmoo+javbus**：由于javbus搜索引擎排序偶尔有误、avmoo演员名不全，所以用avmoo匹配编号之后，在javbus获取详细信息。
 
@@ -47,4 +46,3 @@ ABC-123-4k-C_P2 演员1,演员2 标题 2000-01-01
 不是打赏
 <img src="https://github.com/LSD08KM/115RenamePlus/blob/master/img/red.jpg" height="500px;" />
 
-<img src="D:\github\115RenamePlus\img\red.jpg" height="500px;" />
