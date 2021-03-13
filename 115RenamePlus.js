@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name                115RenamePlus
 // @namespace           https://github.com/LSD08KM/115RenamePlus
-// @version             0.8.9 
+// @version             0.8.10 格式化视频分段 4K 增加icon 
 // @description         115RenamePlus(根据现有的文件名<番号>查询并修改文件名)
 // @author              db117, FAN0926, LSD08KM
 // @include             https://115.com/*
@@ -25,17 +25,19 @@
     // 按钮
     let rename_list = `
             <li id="rename_list">
-				<a id="rename_video_avmoo_javbus" class="mark" href="javascript:;">视频改名avmoo+javbus</a>
-                <a id="rename_video_avmoo" class="mark" href="javascript:;">视频改名avmoo</a>
-                <a id="rename_video_javbus" class="mark" href="javascript:;">视频改名javbus</a>
-                <a id="rename_video_FC2" class="mark" href="javascript:;">视频改名FC2</a>
-                <a id="rename_video_mgstage" class="mark" href="javascript:;">视频改名mgstage</a>
-				<!-- 图片改名 、 直接用番号进详情页
-                <a id="rename_video_javbus_detail" class="mark" href="javascript:;">视频改名javbus详情页</a>
-                <a id="rename_picture_avmoo" class="mark" href="javascript:;">图片改名avmoo</a>
-                <a id="rename_picture_javbus" class="mark" href="javascript:;">图片改名javbus</a>				
-				<a id="rename_picture_FC2" class="mark" href="javascript:;">图片改名FC2</a>
-				<a id="rename_picture_mgstage" class="mark" href="javascript:;">图片改名mgstage</a>
+				<a id="rename_video_avmoo_javbus" class="mark" href="javascript:;"><i class="icon-operate ifo-video-play"></i><span>视频改名avmoo+javbus</span></a>
+                <a id="rename_video_avmoo" class="mark" href="javascript:;"><i class="icon-operate ifo-video-play"></i><span>视频改名avmoo</span></a>
+                <a id="rename_video_javbus" class="mark" href="javascript:;"><i class="icon-operate ifo-video-play"></i><span>视频改名javbus</span></a>
+                <a id="rename_video_FC2" class="mark" href="javascript:;"><i class="icon-operate ifo-video-play"></i><span>视频改名FC2</span></a>
+                <a id="rename_video_mgstage" class="mark" href="javascript:;"><i class="icon-operate ifo-video-play"></i><span>视频改名mgstage</span></a>
+				<!-- 处理视频分段，转成_P1格式-->
+				<a id="video_part_format" class="mark" href="javascript:;"><i class="icon-operate ifo-tag"></i><span>格式化视频分段</span></a>				
+				<!--
+                <a id="rename_video_javbus_detail" class="mark" href="javascript:;"><i class="icon-operate ifo-linktask"></i><span>视频改名javbus详情页</span></a>
+                <a id="rename_picture_avmoo" class="mark" href="javascript:;"><i class="icon-operate ifo-cover"></i><span>图片改名avmoo</span></a>
+                <a id="rename_picture_javbus" class="mark" href="javascript:;"><i class="icon-operate ifo-cover"></i><span>图片改名javbus</span></a>				
+				<a id="rename_picture_FC2" class="mark" href="javascript:;"><i class="icon-operate ifo-cover"></i><span>图片改名FC2</span></a>
+				<a id="rename_picture_mgstage" class="mark" href="javascript:;"><i class="icon-operate ifo-cover"></i><span>图片改名mgstage</span></a>
 				-->
             </li>
         `;
@@ -95,6 +97,10 @@
 			$("a#rename_video_javbus_detail").click(
 			    function () {
 			        rename(renameJavbusDetail, "javbus", "video", true);
+			    });	
+			$("a#video_part_format").click(
+			    function () {
+			        videoPartFormat();
 			    });	
 			$("a#rename_picture_avmoo").click(
 			    function () {
@@ -171,7 +177,7 @@
 							let ifChineseCaptions = checkifChineseCaptions(VideoCode.fh, file_name);
 							// 执行查询
 							console.log("开始查询");
-							call(fid, rntype, VideoCode.fh, suffix, ifChineseCaptions, VideoCode.part, ifAddDate);
+							call(fid, rntype, VideoCode.fh, suffix, VideoCode.if4k, ifChineseCaptions, VideoCode.part, ifAddDate);
 						} else if ( rntype=="picture" ){
 							// 是图片时，向part传图片名冗余，不要中字判断，只在页面获取编号
 							// 图片名冗余
@@ -179,12 +185,14 @@
 							let ifChineseCaptions;
 							// 执行查询
 							console.log("开始查询");
-							call(fid, rntype, VideoCode.fh, suffix, ifChineseCaptions, picCaptions, ifAddDate);
+							call(fid, rntype, VideoCode.fh, suffix, VideoCode.if4k, ifChineseCaptions, picCaptions, ifAddDate);
 						}
                         
                     }
                 }
             });
+		// if(!Main.ReInstance({type:'', star:'', is_q: '', is_share:''})){window.location.reload();}
+		// if(list){window.location.reload();}
     }
     /**
      * 通过avmoo搜索+javbus详情页进行查询
@@ -197,10 +205,10 @@
 	 * @param ifAddDate              是否添加时间 
 	 * @param searchUrl               请求地址
      */
-    function renameAvmooJavbus(fid, rntype, fh, suffix, ifChineseCaptions, part, ifAddDate) {
-        requestAvmooJavbus(fid, rntype, fh, suffix, ifChineseCaptions, part, ifAddDate, avmooSearch);
+    function renameAvmooJavbus(fid, rntype, fh, suffix, if4k, ifChineseCaptions, part, ifAddDate) {
+        requestAvmooJavbus(fid, rntype, fh, suffix, if4k, ifChineseCaptions, part, ifAddDate, avmooSearch);
     }
-    function requestAvmooJavbus(fid, rntype, fh, suffix, ifChineseCaptions, part, ifAddDate, searchUrl) {
+    function requestAvmooJavbus(fid, rntype, fh, suffix, if4k, ifChineseCaptions, part, ifAddDate, searchUrl) {
         let title;
         let fh_o;   //网页上的番号
         let date;
@@ -288,7 +296,7 @@
                     let actor = actors.toString();
                     console.log(actor);
                     // 构建新名称
-                    let newName = buildNewName(fh_o, rntype, suffix, ifChineseCaptions, part, title, date, actor, ifAddDate);                    
+                    let newName = buildNewName(fh_o, rntype, suffix, if4k, ifChineseCaptions, part, title, date, actor, ifAddDate);                    
                     if (newName) {
                         // 修改名称
                         send_115(fid, newName, fh_o);
@@ -298,7 +306,7 @@
                 }else if (searchUrl !== javbusUncensoredSearch) {
                     console.log("查询无码 " + searchUrl);
                     // 进行无码重查询
-                    requestJavbus(fid, rntype, fh, suffix, ifChineseCaptions, part, ifAddDate, javbusUncensoredSearch);
+                    requestJavbus(fid, rntype, fh, suffix, if4k, ifChineseCaptions, part, ifAddDate, javbusUncensoredSearch);
                 }else {
                     resolve("没有查到结果");
                 }
@@ -323,10 +331,10 @@
 	 * @param ifAddDate              是否添加时间 
 	 * @param searchUrl               请求地址
      */
-    function renameJavbusDetail(fid, rntype, fh, suffix, ifChineseCaptions, part, ifAddDate) {
-        requestJavbusDetail(fid, rntype, fh, suffix, ifChineseCaptions, part, ifAddDate, javbusSearch);
+    function renameJavbusDetail(fid, rntype, fh, suffix, if4k, ifChineseCaptions, part, ifAddDate) {
+        requestJavbusDetail(fid, rntype, fh, suffix, if4k, ifChineseCaptions, part, ifAddDate, javbusSearch);
     }
-    function requestJavbusDetail(fid, rntype, fh, suffix, ifChineseCaptions, part, ifAddDate, searchUrl) {
+    function requestJavbusDetail(fid, rntype, fh, suffix, if4k, ifChineseCaptions, part, ifAddDate, searchUrl) {
         let title;
         let date;
         let moviePage = javbusBase + fh;
@@ -367,7 +375,7 @@
                 if(moviePage){
                     let actor = actors.toString();
                     // 构建新名称
-                    let newName = buildNewName(fh, suffix, ifChineseCaptions, part, title, date, actor, ifAddDate);                    
+                    let newName = buildNewName(fh, rntype, suffix, if4k, ifChineseCaptions, part, title, date, actor, ifAddDate);
                     if (newName) {
                         // 修改名称
                         send_115(fid, newName, fh);
@@ -377,7 +385,7 @@
                 }else if (searchUrl !== javbusUncensoredSearch) {
                     console.log("查询无码 " + searchUrl);
                     // 进行无码重查询
-                    requestJavbus(fid, fh, suffix, ifChineseCaptions, part, ifAddDate, javbusUncensoredSearch);
+                    requestJavbus(fid, fh, suffix, if4k, ifChineseCaptions, part, ifAddDate, javbusUncensoredSearch);
                 }else {
                     resolve("没有查到结果");
                 }
@@ -401,10 +409,10 @@
 	 * @param ifAddDate              是否添加时间 
 	 * @param searchUrl               请求地址
      */
-    function renameJavbus(fid, rntype, fh, suffix, ifChineseCaptions, part, ifAddDate) {
-        requestJavbus(fid, rntype, fh, suffix, ifChineseCaptions, part, ifAddDate, javbusSearch);
+    function renameJavbus(fid, rntype, fh, suffix, if4k, ifChineseCaptions, part, ifAddDate) {
+        requestJavbus(fid, rntype, fh, suffix, if4k, ifChineseCaptions, part, ifAddDate, javbusSearch);
     }
-    function requestJavbus(fid, rntype, fh, suffix, ifChineseCaptions, part, ifAddDate, searchUrl) {
+    function requestJavbus(fid, rntype, fh, suffix, if4k, ifChineseCaptions, part, ifAddDate, searchUrl) {
         let title;
         let fh_o;   //网页上的番号
         let date;
@@ -445,6 +453,7 @@
         function getJavbusDetail(){
             return new Promise((resolve, reject) => {
 				if ( rntype=="picture" ){
+					console.log("跳过详情页");
 					resolve();
 				} else if ( rntype=="video" ){
 					if(moviePage){
@@ -489,7 +498,7 @@
                     let actor = actors.toString();
                     console.log(actor);
                     // 构建新名称
-                    let newName = buildNewName(fh_o, rntype, suffix, ifChineseCaptions, part, title, date, actor, ifAddDate);                    
+                    let newName = buildNewName(fh_o, rntype, suffix, if4k, ifChineseCaptions, part, title, date, actor, ifAddDate);                    
                     if (newName) {
                         // 修改名称
                         send_115(fid, newName, fh_o);
@@ -499,7 +508,7 @@
                 }else if (searchUrl !== javbusUncensoredSearch) {
                     console.log("查询无码 " + searchUrl);
                     // 进行无码重查询
-                    requestJavbus(fid, rntype, fh, suffix, ifChineseCaptions, part, ifAddDate, javbusUncensoredSearch);
+                    requestJavbus(fid, rntype, fh, suffix, if4k, ifChineseCaptions, part, ifAddDate, javbusUncensoredSearch);
                 }else {
                     resolve("没有查到结果");
                 }
@@ -524,10 +533,10 @@
      * @param ifAddDate              是否添加时间 
      * @param searchUrl               请求地址
      */
-    function renameAvmoo(fid, rntype, fh, suffix, ifChineseCaptions, part, ifAddDate) {
-        requestAvmoo(fid, fh, suffix, ifChineseCaptions, part, ifAddDate, avmooSearch);
+    function renameAvmoo(fid, rntype, fh, suffix, if4k, ifChineseCaptions, part, ifAddDate) {
+        requestAvmoo(fid, rntype, fh, suffix, if4k, ifChineseCaptions, part, ifAddDate, avmooSearch);
     }
-    function requestAvmoo(fid, rntype, fh, suffix, ifChineseCaptions, part, ifAddDate, searchUrl) {
+    function requestAvmoo(fid, rntype, fh, suffix, if4k, ifChineseCaptions, part, ifAddDate, searchUrl) {
         let title;
         let fh_o;   //网页上的番号
         let date;
@@ -570,6 +579,7 @@
         function getAvmooDetail(){
             return new Promise((resolve, reject) => {
 				if ( rntype=="picture" ){
+					console.log("跳过详情页");
 					resolve();
 				} else if ( rntype=="video" ){
 					if(moviePage){
@@ -609,7 +619,7 @@
                     let actor = actors.toString();
                     console.log(actor);
                     // 构建新名称
-                    let newName = buildNewName(fh_o, rntype, suffix, ifChineseCaptions, part, title, date, actor, ifAddDate);
+                    let newName = buildNewName(fh_o, rntype, suffix, if4k, ifChineseCaptions, part, title, date, actor, ifAddDate);
                     if (newName) {
                         // 修改名称
                         send_115(fid, newName, fh_o);
@@ -618,7 +628,7 @@
                     resolve(newName);
                 } else if (searchUrl !== avmooUncensoredSearch) {
                     // 进行无码重查询
-                    requestAvmoo(fid, rntype, fh, suffix, ifChineseCaptions, part, ifAddDate, avmooUncensoredSearch);
+                    requestAvmoo(fid, rntype, fh, suffix, if4k, ifChineseCaptions, part, ifAddDate, avmooUncensoredSearch);
                 }else {
                     resolve("没有查到结果");
                 }
@@ -641,10 +651,10 @@
 	 * @param ifAddDate           是否带时间
 	 * @param searchUrl         请求地址* 
      */
-    function renameFc2(fid, rntype, fh, suffix, ifChineseCaptions, part, ifAddDate) {
-        requestFC2(fid, rntype, fh, suffix, ifChineseCaptions, part, ifAddDate, Fc2Search);
+    function renameFc2(fid, rntype, fh, suffix, if4k, ifChineseCaptions, part, ifAddDate) {
+        requestFC2(fid, rntype, fh, suffix, if4k, ifChineseCaptions, part, ifAddDate, Fc2Search);
     }
-    function requestFC2(fid, rntype, fh, suffix, ifChineseCaptions, part, ifAddDate, searchUrl) {
+    function requestFC2(fid, rntype, fh, suffix, if4k, ifChineseCaptions, part, ifAddDate, searchUrl) {
         GM_xmlhttpRequest({
             method: "GET",
             url: searchUrl + fh +"/",
@@ -676,7 +686,7 @@
 				
                 if (title) {
                     // 构建新名称
-                    let newName = buildNewName(fh, rntype, suffix, ifChineseCaptions, part, title, date, user, ifAddDate);
+                    let newName = buildNewName(fh, rntype, suffix, if4k, ifChineseCaptions, part, title, date, user, ifAddDate);
                     if (newName) {
                         // 修改名称
                         send_115(fid, newName, fh);
@@ -684,7 +694,7 @@
                 } else if (searchUrl !== javbusUncensoredSearch) {
                     GM_notification(getDetails(fh, "商品页可能已消失"));
                     // 进行无码重查询
-                    // requestJavbus(fid, rntype, fh, suffix, ifChineseCaptions, part, javbusUncensoredSearch);
+                    // requestJavbus(fid, rntype, fh, suffix, if4k, ifChineseCaptions, part, javbusUncensoredSearch);
                 }
             }
         })
@@ -701,10 +711,10 @@
      * @param ifAddDate           是否带时间
      * @param searchUrl         请求地址
      */
-    function renameMgstage(fid, rntype, fh, suffix, ifChineseCaptions, part, ifAddDate) {
-        requestmgstage(fid, rntype, fh, suffix, ifChineseCaptions, part, ifAddDate, mgstageSearch);
+    function renameMgstage(fid, rntype, fh, suffix, if4k, ifChineseCaptions, part, ifAddDate) {
+        requestmgstage(fid, rntype, fh, suffix, if4k, ifChineseCaptions, part, ifAddDate, mgstageSearch);
     }
-    function requestmgstage(fid, rntype, fh, suffix, ifChineseCaptions, part, ifAddDate, searchUrl) {
+    function requestmgstage(fid, rntype, fh, suffix, if4k, ifChineseCaptions, part, ifAddDate, searchUrl) {
         GM_xmlhttpRequest({
             method: "GET",
             url: searchUrl + fh +"/",
@@ -749,7 +759,7 @@
 				
                 if (title) {
                     // 构建新名称
-                    let newName = buildNewName(fh, rntype, suffix, ifChineseCaptions, part, title, date, actors, ifAddDate);
+                    let newName = buildNewName(fh, rntype, suffix, if4k, ifChineseCaptions, part, title, date, actors, ifAddDate);
                     if (newName) {
                         // 修改名称
                         send_115(fid, newName, fh);
@@ -757,7 +767,7 @@
                 } else if (searchUrl !== javbusUncensoredSearch) {
                     GM_notification(getDetails(fh, "商品页可能已消失"));
                     // 进行无码重查询
-                    // requestJavbus(fid, rntype, fh, suffix, ifChineseCaptions, part, javbusUncensoredSearch);
+                    // requestJavbus(fid, rntype, fh, suffix, if4k, ifChineseCaptions, part, javbusUncensoredSearch);
                 }
 
             }
@@ -805,16 +815,21 @@
 	 * @param rntype      		改名类型 video picture
      * @param suffix            后缀，扩展名
      * @param ifChineseCaptions   是否有中文字幕
+	 * @param part				视频分段，图片冗余文件名 
      * @param title             番号标题
      * @param date              日期
      * @param actor             演员
      * @param ifAddDate           是否加日期
      * @returns {string}        新名称
      */
-    function buildNewName(fh, rntype, suffix, ifChineseCaptions, part, title, date, actor, ifAddDate) {
+    function buildNewName(fh, rntype, suffix, if4k, ifChineseCaptions, part, title, date, actor, ifAddDate) {
 		if ( rntype=="video" ){
 			if (title) {
 				let newName = String(fh);
+				// 是4k 
+				if (if4k) {
+					newName = newName + if4k;
+				}
 				// 有中文字幕
 				if (ifChineseCaptions) {
 					newName = newName + "-C";
@@ -845,8 +860,8 @@
 		} else if ( rntype=="picture" ){
 			if (fh){
 				let newName = String(fh);
-				if (picCaptions){
-				    newName = newName  +  picCaptions;
+				if (part){
+				    newName = newName  +  part;
 				}
 				if (suffix) {
 				    // 文件保存后缀名
@@ -880,7 +895,6 @@
      * @param fh 番号
      */
     function send_115(id, name, fh) {
-
         let file_name = stringStandard(name);
         $.post("https://webapi.115.com/files/edit", {
                 fid: id,
@@ -940,6 +954,18 @@
             part = part.toString().match(/\d+/).toString();
             console.log("识别多集:" + part);
         }
+		
+		let if4k;
+		if (!if4k) {
+			if4k = title.match(/(-4K){1}/);
+			if(if4k){ if4k = "-4k";}
+		} if (!if4k) {
+		    if4k = title.match(/(VP9版){1}/);
+			if(if4k){ if4k = "-4kVP9版";}
+		} if (!if4k) {
+			if4k = title.match(/(H264版){1}/);
+			if(if4k){ if4k = "-4kH264版";}
+		}
 
         title = title.replace("SIS001", "")
             .replace("1080P", "")
@@ -1041,9 +1067,84 @@
             console.log("找到番号:" + t);
             return{
                 fh: t,
-                part: part
+                part: part,
+				if4k: if4k,
             };
         }
     }
+
+    /**
+     * 处理视频分段，转成_P1格式-->
+     */
+	function videoPartFormat(){
+		let list = $("iframe[rel='wangpan']")
+		    .contents()
+		    .find("li.selected")
+		    .each(function (index, v) {
+		        let $item = $(v);
+		        // 原文件名称
+		        let file_name = $item.attr("title");
+		        // 文件类型
+		        let file_type = $item.attr("file_type");
+		        // 文件id
+		        let fid;
+		        // 扩展名
+		        let suffix;
+		        if (file_type === "0") {
+		            // 文件夹
+		            fid = $item.attr("cate_id");
+		        } else {
+		            // 文件
+		            fid = $item.attr("file_id");
+		            // 处理后缀
+		            let lastIndexOf = file_name.lastIndexOf('.');
+		            if (lastIndexOf !== -1) {
+		                suffix = file_name.substring(lastIndexOf, file_name.length);
+		                file_name = file_name.substring(0, lastIndexOf);
+		            }
+		        }
+		        if (fid && file_name) {
+					let file_name_upper = file_name.toUpperCase();
+					console.log("处理文件名: " + file_name_upper);
+					// 判断是否多集
+					let part;  //FHD1 hhb1
+					let regexp; 
+					if (!part) {
+						regexp = /CD\d{1,2}/;
+					    part = file_name_upper.match(regexp);
+					}if (!part) {
+						regexp = /HD\d{1,2}/;
+					    part = file_name_upper.match(regexp);
+					}if (!part) {
+						regexp = /FHD\d{1,2}/;
+					    part = file_name_upper.match(regexp);
+					}if (!part) {
+						regexp = /HHB\d{1,2}/;
+					    part = file_name_upper.match(regexp);				
+					}if (!part) {
+						regexp = /(_P){1}\d{1,2}/;
+					    part = file_name_upper.match(regexp);
+					}
+					if (part){
+						part = part.toString().match(/\d+/).toString();
+					}
+					if (!part) {
+						regexp = /(-){1}[A-Z]{1}/;
+					    part = file_name_upper.match(regexp);
+						if (part){
+							part = part.toString().charCodeAt(1)-64;
+						}
+					}
+					
+					if (part){					    
+					    console.log("识别多集:" + part);
+						let newName = file_name_upper.replace(regexp, "_P"+part);
+						console.log("新文件名" + newName);
+						let iname = file_name_upper.slice(0, file_name_upper.search(regexp));
+						send_115(fid, newName, iname);
+					}
+		        }
+		    });
+	}
 
 })();
