@@ -14,7 +14,7 @@
 <img src="https://github.com/LSD08KM/115RenamePlus/blob/master/img/01.png" height="230px;" />
 
 
-J尽量使用**视频改名avmoo+javbus **：由于javbus搜索引擎排序偶尔有误、avmoo演员名不全，所以用avmoo匹配编号之后，在javbus获取详细信息。
+尽量使用**视频改名avmoo+javbus**：由于javbus搜索引擎排序偶尔有误、avmoo演员名不全，所以用avmoo匹配编号之后，在javbus获取详细信息。
 
 **格式化视频分段**： 由于为了防止与-C中文字幕格式冲突，识别多集视频时没考虑-A、-B、-C这种格式。当影片原有分段格式是-A、-B、-C这种类型时，需要先点此选项格式化分段为_P1  _P2 _P3后，再刷新网页，选择其他改名选项。
 
