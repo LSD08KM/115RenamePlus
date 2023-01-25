@@ -29,9 +29,7 @@
                 <a id="rename_video_avmoo" class="mark" href="javascript:;"><i class="icon-operate ifo-video-play"></i><span>视频改名avmoo</span></a>
                 <a id="rename_video_javbus" class="mark" href="javascript:;"><i class="icon-operate ifo-video-play"></i><span>视频改名javbus</span></a>
                 <a id="rename_video_FC2" class="mark" href="javascript:;"><i class="icon-operate ifo-video-play"></i><span>视频改名FC2</span></a>
-                <a id="rename_video_mgstage" class="mark" href="javascript:;"><i class="icon-operate ifo-video-play"></i><span>视频改名mgstage</span></a>
-				<!-- 处理视频分段，转成_P1格式-->
-				<a id="video_part_format" class="mark" href="javascript:;"><i class="icon-operate ifo-tag"></i><span>格式化视频分段</span></a>				
+                <a id="rename_video_mgstage" class="mark" href="javascript:;"><i class="icon-operate ifo-video-play"></i><span>视频改名mgstage</span></a>		
 				<!--
                 <a id="rename_video_javbus_detail" class="mark" href="javascript:;"><i class="icon-operate ifo-linktask"></i><span>视频改名javbus详情页</span></a>
                 <a id="rename_picture_avmoo" class="mark" href="javascript:;"><i class="icon-operate ifo-cover"></i><span>图片改名avmoo</span></a>
@@ -798,14 +796,13 @@
         if (title.indexOf("中文字幕") !== -1) {
             return true;
         }
-        let regExp = new RegExp(fh + "[_-]?C");
-        let regExp2 = new RegExp(fh + "[_-]?CD");
+		if (title.indexOf("中字") !== -1) {
+            return true;
+        }
+		let regExp = new RegExp("[_-]?C(?!D)");
         let match = title.toUpperCase().match(regExp);
-        let match2 = title.toUpperCase().match(regExp2);
         if (match) {
-            if (match2) {} else {
-                return true;
-            }
+            return true;
         }
     }
 	
@@ -947,8 +944,6 @@
             part = title.match(/FHD\d{1,2}/);
         }if (!part) {
             part = title.match(/HHB\d{1,2}/);
-        }if (!part) {
-            part = title.match(/(_P){1}\d{1,2}/);
         }
         if (part){
             part = part.toString().match(/\d+/).toString();
@@ -976,6 +971,7 @@
             .replace("[7SHT.ME]","")
             .replace("BIG2048.COM","")
             .replace("FUN2048.COM@","")
+			.replace("HHD800.COM@","")
             .replace(".HHB","分段")
             .replace(".FHD","分段")
             .replace(".HD","分段");
@@ -1072,79 +1068,5 @@
             };
         }
     }
-
-    /**
-     * 处理视频分段，转成_P1格式-->
-     */
-	function videoPartFormat(){
-		let list = $("iframe[rel='wangpan']")
-		    .contents()
-		    .find("li.selected")
-		    .each(function (index, v) {
-		        let $item = $(v);
-		        // 原文件名称
-		        let file_name = $item.attr("title");
-		        // 文件类型
-		        let file_type = $item.attr("file_type");
-		        // 文件id
-		        let fid;
-		        // 扩展名
-		        let suffix;
-		        if (file_type === "0") {
-		            // 文件夹
-		            fid = $item.attr("cate_id");
-		        } else {
-		            // 文件
-		            fid = $item.attr("file_id");
-		            // 处理后缀
-		            let lastIndexOf = file_name.lastIndexOf('.');
-		            if (lastIndexOf !== -1) {
-		                suffix = file_name.substring(lastIndexOf, file_name.length);
-		                file_name = file_name.substring(0, lastIndexOf);
-		            }
-		        }
-		        if (fid && file_name) {
-					let file_name_upper = file_name.toUpperCase();
-					console.log("处理文件名: " + file_name_upper);
-					// 判断是否多集
-					let part;  //FHD1 hhb1
-					let regexp; 
-					if (!part) {
-						regexp = /CD\d{1,2}/;
-					    part = file_name_upper.match(regexp);
-					}if (!part) {
-						regexp = /HD\d{1,2}/;
-					    part = file_name_upper.match(regexp);
-					}if (!part) {
-						regexp = /FHD\d{1,2}/;
-					    part = file_name_upper.match(regexp);
-					}if (!part) {
-						regexp = /HHB\d{1,2}/;
-					    part = file_name_upper.match(regexp);				
-					}if (!part) {
-						regexp = /(_P){1}\d{1,2}/;
-					    part = file_name_upper.match(regexp);
-					}
-					if (part){
-						part = part.toString().match(/\d+/).toString();
-					}
-					if (!part) {
-						regexp = /(-){1}[A-Z]{1}/;
-					    part = file_name_upper.match(regexp);
-						if (part){
-							part = part.toString().charCodeAt(1)-64;
-						}
-					}
-					
-					if (part){					    
-					    console.log("识别多集:" + part);
-						let newName = file_name_upper.replace(regexp, "_P"+part);
-						console.log("新文件名" + newName);
-						let iname = file_name_upper.slice(0, file_name_upper.search(regexp));
-						send_115(fid, newName, iname);
-					}
-		        }
-		    });
-	}
 
 })();
