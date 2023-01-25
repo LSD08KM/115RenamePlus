@@ -9,8 +9,8 @@
 // @domain              fanbus.blog
 // @domain              busdmm.club
 // @domain              seedmm.blog
-// @domain              avmoo.host
-// @domain              avmoo.cyou
+// @domain              avmoo.com
+// @domain              avmoo.click
 // @domain              avsox.website
 // @domain              adult.contents.fc2.com
 // @domain              mgstage.com
@@ -45,7 +45,7 @@
     let interval = setInterval(buttonInterval, 1000);
 
     // javbus
-    let javbusBase = "https://www.fanbus.blog/";
+    let javbusBase = "https://www.javbus.com/";
     // 有码
     let javbusSearch = javbusBase + "search/";
     // 无码
@@ -53,7 +53,7 @@
 	
     // avmoo
     // 有码
-    let avmooSearch = "https://avmoo.cyou/cn/search/";
+    let avmooSearch = "https://avmoo.click/cn/search/";
     // 无码
     let avmooUncensoredSearch = "https://avsox.website/cn/search/";
 
