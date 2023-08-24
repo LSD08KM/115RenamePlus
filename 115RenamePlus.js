@@ -121,6 +121,21 @@
             clearInterval(interval);
         }
     }
+	
+    /**
+     * html文本转换为虚拟Document对象
+     * @param {String} text
+     * @returns {Document}
+     */
+     function parsetext(text) {
+        try {
+            let doc = document.implementation.createHTMLDocument('');
+            doc.documentElement.innerHTML = text;
+            return doc;
+        } catch (e) {
+            console.log('parse error');
+        }
+    }
 
     /**
      * 执行改名方法
@@ -219,7 +234,7 @@
                 method: "GET",
                 url: url_s,
                 onload: xhr => {
-                    let response = $(xhr.responseText);
+                    let response = $(parsetext(xhr.responseText));
                     if (!(response.find("div.alert").length)) {
 						/*
                         // 标题
@@ -258,7 +273,7 @@
 							method: "GET",
 							url: moviePage,
 							onload: xhr => {
-								let response = $(xhr.responseText);
+								let response = $(parsetext(xhr.responseText));
 								// 标题
 								title = response
 								    .find("h3")
@@ -345,7 +360,7 @@
 		            method: "GET",
 		            url: moviePage,
 		            onload: xhr => {
-		                let response = $(xhr.responseText);
+		                let response = $(parsetext(xhr.responseText));
 		                // 标题
 		                title = response
 		                    .find("h3")
@@ -423,7 +438,7 @@
                 method: "GET",
                 url: url_s,
                 onload: xhr => {
-                    let response = $(xhr.responseText);
+                    let response = $(parsetext(xhr.responseText));
 					/*
 					// 标题
 					title = response
@@ -460,7 +475,7 @@
 							method: "GET",
 							url: moviePage,
 							onload: xhr => {
-								let response = $(xhr.responseText);
+								let response = $(parsetext(xhr.responseText));
 								// 标题
 								title = response
 								    .find("h3")
@@ -547,7 +562,7 @@
                 method: "GET",
                 url: url_s,
                 onload: xhr => {
-                    let response = $(xhr.responseText);
+                    let response = $(parsetext(xhr.responseText));
                     if (!(response.find("div.alert").length)) {
 						/*
                         // 标题
@@ -586,7 +601,7 @@
 							method: "GET",
 							url: moviePage,
 							onload: xhr => {
-								let response = $(xhr.responseText);
+								let response = $(parsetext(xhr.responseText));
 								// 标题
 								title = response
 									.find("h3")
@@ -659,7 +674,7 @@
             onload: xhr => {
 				console.log("处理影片页 " + searchUrl + fh +"/");
                 // 匹配标题
-                let response = $(xhr.responseText);
+                let response = $(parsetext(xhr.responseText));
                 let title = response
                     .find("div.items_article_MainitemThumb img")
                     .attr("title");
@@ -719,7 +734,7 @@
             onload: xhr => {
 				console.log("处理影片页 " + searchUrl + fh +"/");
                 // 匹配标题
-                let response = $(xhr.responseText);
+                let response = $(parsetext(xhr.responseText));
                 let title = response
                     .find("div.common_detail_cover > h1")
                     .html()
